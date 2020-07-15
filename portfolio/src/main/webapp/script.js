@@ -15,31 +15,32 @@
 /**
  * Adds a random greeting to the page.
  */
-function addRandomFact() {
-    const facts = [
-        "I don't drink coffee",
-        "My birthday is on 29th of May",
-        "I love vanilla ice cream",
-        "My favourite author is Jane Austen",
-        "I love ice-skating",
-    ];
 
-    // Pick a random fact.
-    const chosenFact = facts[Math.floor(Math.random() * facts.length)];
+function addAndReplaceRandomFact() {
+  const facts = [
+    'I don\'t drink coffee',
+    'My birthday is on 29th of May',
+    'I love vanilla ice cream',
+    'My favourite author is Jane Austen',
+    'I love ice-skating',
+  ];
 
-    // Add it to the page.
-    const factContainer = document.getElementById("fact-container");
-    factContainer.innerText = chosenFact;
+  // Pick a random fact.
+  const chosenFact = facts[Math.floor(Math.random() * facts.length)];
+
+  // Add it to the page.
+  const factContainer = document.getElementById('fact-container');
+  factContainer.innerText = chosenFact;
 }
 
 function addPhoto() {
-    const imgElement = document.createElement('img');
-    // Set the url of the image
-    imgElement.src = 'images/friends.jpg';
-    imgElement.width = "600";
+  const imgElement = document.createElement('img');
+  // Set the url of the image
+  imgElement.src = 'images/friends.jpg';
+  imgElement.width = '600';
 
-    const imageContainer = document.getElementById('friends-image-container');
-    // Remove the previous image.
-    imageContainer.innerHTML = '';
-    imageContainer.appendChild(imgElement);
+  const imageContainer = document.getElementById('friends-image-container');
+  // Remove the previous image.
+  imageContainer.innerHTML = '';
+  imageContainer.appendChild(imgElement);
 }
