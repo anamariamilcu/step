@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * Adds a random greeting to the page.
+ * Adds a random fact to the page.
  */
 
 function addAndReplaceRandomFact() {
@@ -33,10 +33,14 @@ function addAndReplaceRandomFact() {
   factContainer.innerText = chosenFact;
 }
 
+/**
+ * When a button is clicked, this function adds a photo on the page.
+ */
+
 function addPhoto() {
   const imgElement = document.createElement('img');
-  // Set the url of the image
-  imgElement.src = 'images/friends.jpg';
+  // Sets the url of the image I want to add to the page
+  imgElement.src = 'images/friends.jpg';g
   imgElement.width = '600';
 
   const imageContainer = document.getElementById('friends-image-container');
