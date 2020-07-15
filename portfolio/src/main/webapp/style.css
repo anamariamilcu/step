@@ -1,9 +1,42 @@
+body {
+  background-image: url("images/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+h1 {
+  color:rgb(102, 0, 102);
+}
+
+p {
+  color: rgb(227, 76, 133);
+  font-weight: bold;
+  font-size: large;
+}
+
+button {
+  background-color: rgb(242, 208, 224);
+  border: none;
+  color: rgb(166, 45, 102);
+  padding: 15px 32px;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  cursor: pointer;
+}
+
 #content {
   margin-left: auto;
   margin-right: auto;
   width: 650px;
 }
 
-#greeting-container {
+#fact-container {
   margin-top: 20px;
+}
+
+#friends-image-container {
+  margin-top: 30px;
 }

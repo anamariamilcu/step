@@ -15,14 +15,32 @@
 /**
  * Adds a random greeting to the page.
  */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
 
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+function addAndReplaceRandomFact() {
+  const facts = [
+    'I don\'t drink coffee',
+    'My birthday is on 29th of May',
+    'I love vanilla ice cream',
+    'My favourite author is Jane Austen',
+    'I love ice-skating',
+  ];
+
+  // Pick a random fact.
+  const chosenFact = facts[Math.floor(Math.random() * facts.length)];
 
   // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+  const factContainer = document.getElementById('fact-container');
+  factContainer.innerText = chosenFact;
+}
+
+function addPhoto() {
+  const imgElement = document.createElement('img');
+  // Set the url of the image
+  imgElement.src = 'images/friends.jpg';
+  imgElement.width = '600';
+
+  const imageContainer = document.getElementById('friends-image-container');
+  // Remove the previous image.
+  imageContainer.innerHTML = '';
+  imageContainer.appendChild(imgElement);
 }
