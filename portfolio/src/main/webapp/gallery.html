@@ -16,39 +16,83 @@
         <div class="row">
           <div class="column">
             <img src="images/1.jpeg" style="width:100%" 
-            onclick="openModal();currentSlide(1)" class="hover-shadow cursor">
+            onclick="openModal();showCurrentSlide(1)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/2.jpeg" style="width:100%" 
-            onclick="openModal();currentSlide(2)" class="hover-shadow cursor">
+            onclick="openModal();showCurrentSlide(2)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/3.jpeg" style="width:100%" 
-            onclick="openModal();currentSlide(3)" class="hover-shadow cursor">
+            onclick="openModal();showCurrentSlide(3)" class="hover-shadow cursor">
           </div>
           <div class="column">
           <img src="images/4.jpeg" style="width:100%" 
-          onclick="openModal();currentSlide(4)" class="hover-shadow cursor">
+          onclick="openModal();showCurrentSlide(4)" class="hover-shadow cursor">
           </div>
         </div>
 
         <div class="row">
           <div class="column">
             <img src="images/5.jpeg" style="width:100%" 
-            onclick="openModal();currentSlide(5)" class="hover-shadow cursor">
+            onclick="openModal();showCurrentSlide(5)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/6.jpeg" style="width:100%" 
-            onclick="openModal();currentSlide(6)" class="hover-shadow cursor">
+            onclick="openModal();showCurrentSlide(6)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/7.jpeg" style="width:100%" 
-            onclick="openModal();currentSlide(7)" class="hover-shadow cursor">
+            onclick="openModal()showCcurrentSlide(7)" class="hover-shadow cursor">
           </div>
           <div class="column">
           <img src="images/8.jpeg" style="width:100%" 
-          onclick="openModal();currentSlide(8)" class="hover-shadow cursor">
+          onclick="openModal();showCurrentSlide(8)" class="hover-shadow cursor">
           </div>
+        </div>
+      </div>
+
+      <div id="myModal" class="modal">
+        <div class="description-container">
+          <p id="caption"></p>
+        </div>
+        <div class="modal-content">
+          <span class="close cursor" onclick="closeModal()">&times;</span>
+
+          <div class="slide">
+            <img src="images/1.jpeg" style="width:100%">
+          </div>
+
+          <div class="slide">
+            <img src="images/2.jpeg" style="width:100%">
+          </div>
+
+          <div class="slide">
+            <img src="images/3.jpeg" style="width:100%">
+          </div>
+          
+          <div class="slide">
+            <img src="images/4.jpeg" style="width:100%">
+          </div>
+
+          <div class="slide">
+            <img src="images/5.jpeg" style="width:100%">
+          </div>
+
+          <div class="slide">
+            <img src="images/6.jpeg" style="width:100%">
+          </div>
+
+          <div class="slide">
+            <img src="images/7.jpeg" style="width:100%">
+          </div>
+          
+          <div class="slide">
+            <img src="images/8.jpeg" style="width:100%">
+          </div>
+          
+          <a class="prev cursor" onclick="moveNSlides(-1)">&#10094;</a>
+          <a class="next cursor" onclick="moveNSlides(1)">&#10095;</a>
         </div>
       </div>
 
