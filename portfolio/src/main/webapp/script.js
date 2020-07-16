@@ -40,7 +40,7 @@ function addAndReplaceRandomFact() {
 function addPhoto() {
   const imgElement = document.createElement('img');
   // Sets the url of the image I want to add to the page
-  imgElement.src = 'images/friends.jpg';g
+  imgElement.src = 'images/friends.jpg';
   imgElement.width = '600';
 
   const imageContainer = document.getElementById('friends-image-container');
