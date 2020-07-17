@@ -20,7 +20,7 @@ function showCurrentSlide(n) {
 function showSlides(n) {
   var i;
   var slides = document.getElementsByClassName("slide");
-  var descriptionText = document.getElementById("caption");
+  var descriptionText = document.getElementById("description");
   if (n > slides.length) {
     slideIndex = 1;
   }

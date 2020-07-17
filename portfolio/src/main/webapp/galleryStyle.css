@@ -87,5 +87,57 @@ img.hover-shadow {
   transform: translate(-50%, -50%);
   background-color: #fefefe;
   width: 90%;
-  max-width: 600px;
+  max-width: 700px;
 }
+
+.description-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* the X button */
+.close {
+  color: rgb(227, 76, 133);
+  position: absolute;
+  z-index: 2;
+  top: 2px;
+  right: 16px;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color:rgb(102, 0, 102);  
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -50px;
+  color: pink;
+  font-weight: bold;
+  font-size: 20px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* next button comes to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.prev:hover,
+.next:hover {
+  background-color: rgba(68, 3, 68, 0.644);
+}
+
