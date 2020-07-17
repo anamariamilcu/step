@@ -60,6 +60,11 @@ img.hover-shadow {
   width: 1000px;
 }
 
+.row > .column > img,
+.slide > img {
+    width: 100%;
+}
+
 .gallery {
   display: none;
   position: fixed;

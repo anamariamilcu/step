@@ -6,7 +6,7 @@ function closeGallery() {
 	document.getElementById('myGallery').style.display = 'none';
 }
 
-var slideIndex = 1;
+let slideIndex = 1;
 showSlidingGallery(slideIndex);
 
 function moveNSlides(n) {
@@ -18,21 +18,20 @@ function showCurrentSlide(n) {
 }
 
 function showSlidingGallery(n) {
-	var i;
-	var slides = document.getElementsByClassName('slide');
-	var descriptionText = document.getElementById('description');
-  var slideNumber = document.getElementById('slide-number');
+	let i;
+	const slides = document.getElementsByClassName('slide');
+	const descriptionText = document.getElementById('description');
+  const slideNumber = document.getElementById('slide-number');
 	if (n > slides.length) {
 		slideIndex = 1;
-	}
-	if (n < 1) {
+	} else if (n < 1) {
 		slideIndex = slides.length;
 	}
 	for (i = 0; i < slides.length; i++) {
 		slides[i].style.display = 'none';
 	}
 	slides[slideIndex - 1].style.display = 'block';
-    descriptionText.style.fontSize = 'x-large';
+  descriptionText.style.fontSize = 'x-large';
 	descriptionText.innerHTML = slides[slideIndex - 1].getElementsByTagName('img')[0].alt;
-    slideNumber.innerHTML = slideIndex + '/' + slides.length;
+  slideNumber.innerHTML = slideIndex + '/' + slides.length;
 }
