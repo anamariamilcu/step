@@ -60,8 +60,7 @@ img.hover-shadow {
   width: 1000px;
 }
 
-/*  Modal's Body */
-.modal {
+.gallery {
   display: none;
   position: fixed;
   z-index: 1;
@@ -77,8 +76,7 @@ img.hover-shadow {
   background-position: center;
 }
 
-/* Modal Content */
-.modal-content {
+.gallery-content {
   margin: 0;
   position: absolute;
   top: 50%;
@@ -86,7 +84,6 @@ img.hover-shadow {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   background-color: #fefefe;
-  width: 90%;
   max-width: 700px;
 }
 
@@ -97,7 +94,7 @@ img.hover-shadow {
 
 /* the X button */
 .close {
-  color: rgb(227, 76, 133);
+  color: pink;
   position: absolute;
   z-index: 2;
   top: 2px;
@@ -141,3 +138,12 @@ img.hover-shadow {
   background-color: rgba(68, 3, 68, 0.644);
 }
 
+#slide-number {
+    color: pink;
+    z-index: 2;
+    top: 2px;
+    font-size: 30px;
+    font-weight: bold;
+    padding: 8px 12px;
+    position: absolute;
+}

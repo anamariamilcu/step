@@ -13,82 +13,92 @@
           when we could travel, so here are some pics from last summer :)</p>
       
       <div class="smallGallery">
+
         <div class="row">
           <div class="column">
             <img src="images/1.jpeg" style="width:100%" 
-            onclick="openModal();showCurrentSlide(1)" class="hover-shadow cursor">
+            onclick="openGallery();showCurrentSlide(1)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/2.jpeg" style="width:100%" 
-            onclick="openModal();showCurrentSlide(2)" class="hover-shadow cursor">
+            onclick="openGallery();showCurrentSlide(2)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/3.jpeg" style="width:100%" 
-            onclick="openModal();showCurrentSlide(3)" class="hover-shadow cursor">
+            onclick="openGallery();showCurrentSlide(3)" class="hover-shadow cursor">
           </div>
           <div class="column">
-          <img src="images/4.jpeg" style="width:100%" 
-          onclick="openModal();showCurrentSlide(4)" class="hover-shadow cursor">
+            <img src="images/4.jpeg" style="width:100%" 
+            onclick="openGallery();showCurrentSlide(4)" class="hover-shadow cursor">
           </div>
         </div>
 
         <div class="row">
           <div class="column">
             <img src="images/5.jpeg" style="width:100%" 
-            onclick="openModal();showCurrentSlide(5)" class="hover-shadow cursor">
+            onclick="openGallery();showCurrentSlide(5)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/6.jpeg" style="width:100%" 
-            onclick="openModal();showCurrentSlide(6)" class="hover-shadow cursor">
+            onclick="openGallery();showCurrentSlide(6)" class="hover-shadow cursor">
           </div>
           <div class="column">
             <img src="images/7.jpeg" style="width:100%" 
-            onclick="openModal()showCcurrentSlide(7)" class="hover-shadow cursor">
+            onclick="openGallery()showCcurrentSlide(7)" class="hover-shadow cursor">
           </div>
           <div class="column">
-          <img src="images/8.jpeg" style="width:100%" 
-          onclick="openModal();showCurrentSlide(8)" class="hover-shadow cursor">
+            <img src="images/8.jpeg" style="width:100%" 
+            onclick="openGallery();showCurrentSlide(8)" class="hover-shadow cursor">
           </div>
         </div>
       </div>
 
-      <div id="myModal" class="modal">
+      <div id="myGallery" class="gallery">
         <div class="description-container">
           <p id="description"></p>
         </div>
-        <div class="modal-content">
-          <span class="close cursor" onclick="closeModal()">&times;</span>
+        <div class="gallery-content">
+          <span class="close cursor" onclick="closeGallery()">&times;</span>
+          <span id="slide-number"></span>
 
           <div class="slide">
-            <img src="images/1.jpeg" style="width:100%" alt="blaaaa">
+            <img src="images/1.jpeg" style="width:100%" 
+            alt="Belvedere Palace">
           </div>
 
           <div class="slide">
-            <img src="images/2.jpeg" style="width:100%">
+            <img src="images/2.jpeg" style="width:100%" 
+            alt="Schonnbrun Palace">
           </div>
 
           <div class="slide">
-            <img src="images/3.jpeg" style="width:100%">
+            <img src="images/3.jpeg" style="width:100%" 
+            alt="Me in the garden of Schonnbrun Palace">
           </div>
           
           <div class="slide">
-            <img src="images/4.jpeg" style="width:100%">
+            <img src="images/4.jpeg" style="width:100%"
+            alt="Panoramic view of Wien from the Schonnbrun Hill">
           </div>
 
           <div class="slide">
-            <img src="images/5.jpeg" style="width:100%">
+            <img src="images/5.jpeg" style="width:100%"
+            alt="Me  on the Danube seafront">
           </div>
 
           <div class="slide">
-            <img src="images/6.jpeg" style="width:100%">
+            <img src="images/6.jpeg" style="width:100%"
+            alt="Wien State Opera">
           </div>
 
           <div class="slide">
-            <img src="images/7.jpeg" style="width:100%">
+            <img src="images/7.jpeg" style="width:100%"
+            alt="Another panoramic view from Donau Turm">
           </div>
           
           <div class="slide">
-            <img src="images/8.jpeg" style="width:100%">
+            <img src="images/8.jpeg" style="width:100%"
+            alt="View from the balcony of Albertina Museum">
           </div>
           
           <a class="prev cursor" onclick="moveNSlides(-1)">&#10094;</a>
