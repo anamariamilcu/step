@@ -142,13 +142,13 @@ img.hover-shadow {
 }
 
 #slide-number {
-    color: pink;
-    z-index: 2;
-    top: 2px;
-    font-size: 30px;
-    font-weight: bold;
-    padding: 8px 12px;
-    position: absolute;
+  color: pink;
+  z-index: 2;
+  top: 2px;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 8px 12px;
+  position: absolute;
 }
 
 .fade {
