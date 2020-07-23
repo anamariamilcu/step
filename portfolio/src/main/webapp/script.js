@@ -51,12 +51,10 @@ function addPhoto() {
 
 function getCommentSectionFromServer() {
   fetch('/comment-section').then(response => response.json()).then((comments) => {
-    console.log(comments);
     const commSection = document.getElementById('comment-list');
     // Build the comment section.
     comments.forEach((comm) => {
       commSection.appendChild(createIndividualComment(comm));
-      console.log(comm);
     });
   });
 }
@@ -64,11 +62,14 @@ function getCommentSectionFromServer() {
 // Format each particular comment to show up on page.
 function createIndividualComment(comment) {
   const liElement = document.createElement('li');
+  // This container is used for showing the username.
   const usernameElement = document.createElement('p');
-  const commentElement = document.createElement('span');
+  // This container is used for showing the text of the comment.
+  const commentElement = document.createElement('p');
+
   usernameElement.innerText = comment.username + ' wrote:';
   commentElement.innerText = comment.text;
-  commentElement.style.fontSize = 'initial';
+  commentElement.style.color = 'rgb(102, 0, 102)';
   commentElement.style.fontStyle = 'italic';
   commentElement.style.fontWeight = 'initial';
   commentElement.style.height = '100%';

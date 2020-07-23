@@ -22,6 +22,9 @@ import java.io.IOException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,15 +34,21 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 
-  private List<Comment> comments;
-
-  @Override
-  public void init() {
-    comments = new ArrayList<>();
-  }
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("Comment");
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    List<Comment> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      String username = (String) entity.getProperty("username");
+      String text = (String) entity.getProperty("text");
+
+      Comment comment = new Comment(username, text);
+      comments.add(comment);
+    }
     Gson gson = new Gson();
     String json = gson.toJson(comments);
     response.setContentType("application/json;");
@@ -51,7 +60,12 @@ public class DataServlet extends HttpServlet {
     // Get the converted input from form.
     Comment newComment = getCommentFromForm(request);
     // Add it to the comment history.
-    comments.add(newComment);
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("username", newComment.getUsername());
+    commentEntity.setProperty("text", newComment.getText());
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
     response.sendRedirect("index.html");
   }
 
