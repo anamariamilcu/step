@@ -65,4 +65,14 @@ ul {
   list-style-type: none;
   padding: 0;
   overflow: auto;
+  border-spacing: 15px;
+}
+
+li {
+  word-break: break-all;
+}
+
+li > p {
+  margin-left: 15px;
+  margin-right: 15px;
 }
