@@ -6,17 +6,17 @@ body {
   background-position: center;
 }
 
-h1 {
+h1, h3 {
   color:rgb(102, 0, 102);
 }
 
-p {
+p, label {
   color: rgb(227, 76, 133);
   font-weight: bold;
   font-size: large;
 }
 
-button {
+button, input[type="submit"] {
   background-color: rgb(242, 208, 224);
   border: none;
   color: rgb(166, 45, 102);
@@ -35,8 +35,28 @@ button {
 
 #fact-container {
   margin-top: 20px;
+  color: rgb(227, 76, 133);
+  font-weight: bold;
+  font-size: 24px;
 }
 
 #friends-image-container {
   margin-top: 30px;
+}
+
+#comments-container {
+  width: 350px;
+  top: 20px;
+  right: 50px;
+  position: fixed;
+}
+
+#left-container {
+  top: 10px;
+  left: 10px;
+  position: fixed;
+}
+
+#left-container > p {
+  font-size: 24px;
 }

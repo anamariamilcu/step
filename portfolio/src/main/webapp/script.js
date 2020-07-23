@@ -48,3 +48,32 @@ function addPhoto() {
   imageContainer.innerHTML = '';
   imageContainer.appendChild(imgElement);
 }
+
+function getCommentSectionFromServer() {
+  fetch('/comment-section').then(response => response.json()).then((comments) => {
+    console.log(comments);
+    const commSection = document.getElementById('comment-list');
+    // Build the comment section.
+    comments.forEach((comm) => {
+      commSection.appendChild(createIndividualComment(comm));
+      console.log(comm);
+    });
+  });
+}
+
+// Format each particular comment to show up on page.
+function createIndividualComment(comment) {
+  const liElement = document.createElement('li');
+  const usernameElement = document.createElement('p');
+  const commentElement = document.createElement('span');
+  usernameElement.innerText = comment.username + ' wrote:';
+  commentElement.innerText = comment.text;
+  commentElement.style.fontSize = 'initial';
+  commentElement.style.fontStyle = 'italic';
+  commentElement.style.fontWeight = 'initial';
+  commentElement.style.height = '100%';
+  liElement.appendChild(usernameElement);
+  liElement.appendChild(commentElement);
+  liElement.style.border = 'dotted pink';
+  return liElement;
+}
