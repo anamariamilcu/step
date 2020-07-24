@@ -1,14 +1,20 @@
 package com.google.sps.data;
 
-/* Class that represents how a comment object */
+/* Class that represents a comment object */
 
 public class Comment {
+  private final long id;
   private final String username;
   private String text;
 
-  public Comment(String username, String text) {
+  public Comment(long id, String username, String text) {
+    this.id = id;
     this.username = username;
     this.text = text;
+  }
+
+  public long getId() {
+    return id;
   }
 
   public String getUsername() {
@@ -16,10 +22,6 @@ public class Comment {
   }
 
   public String getText() {
-    return text;
-  }
-
-  public String setText() {
     return text;
   }
 }

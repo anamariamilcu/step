@@ -43,10 +43,11 @@ public class DataServlet extends HttpServlet {
 
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
       String username = (String) entity.getProperty("username");
       String text = (String) entity.getProperty("text");
 
-      Comment comment = new Comment(username, text);
+      Comment comment = new Comment(id, username, text);
       comments.add(comment);
     }
     Gson gson = new Gson();
@@ -74,7 +75,6 @@ public class DataServlet extends HttpServlet {
     String usernameString = request.getParameter("username");
     String commentString = request.getParameter("comment");
 
-    Comment newComment = new Comment(usernameString, commentString);
-    return newComment;
+    return new Comment(0, usernameString, commentString);
   }
 }

@@ -63,18 +63,20 @@ function getCommentSectionFromServer() {
 function createIndividualComment(comment) {
   const liElement = document.createElement('li');
   // This container is used for showing the username.
-  const usernameElement = document.createElement('p');
+  const usernameElement = document.createElement('div');
+  usernameElement.setAttribute('class', 'username-container');
   // This container is used for showing the text of the comment.
-  const commentElement = document.createElement('p');
+  const commentElement = document.createElement('div');
+  commentElement.setAttribute('class', 'comment-text');
+  // Made an image represent the delete button.
+  const deleteButtonElement = document.createElement('img');
+  deleteButtonElement.setAttribute('class', 'delete-button');
+  deleteButtonElement.src = 'images/trash.png'; 
 
   usernameElement.innerText = comment.username + ' wrote:';
   commentElement.innerText = comment.text;
-  commentElement.style.color = 'rgb(102, 0, 102)';
-  commentElement.style.fontStyle = 'italic';
-  commentElement.style.fontWeight = 'initial';
-  commentElement.style.height = '100%';
+  liElement.appendChild(deleteButtonElement);
   liElement.appendChild(usernameElement);
   liElement.appendChild(commentElement);
-  liElement.style.border = 'dotted pink';
   return liElement;
 }
