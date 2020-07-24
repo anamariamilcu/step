@@ -50,8 +50,12 @@ function addPhoto() {
 }
 
 function getCommentSectionFromServer() {
-  fetch('/comment-section').then(response => response.json()).then((comments) => {
+  let commentsNumber = document.getElementById('comment-number').value;
+  let url = '/comment-section?commentsnumber=' + commentsNumber;
+  fetch(url).then(response => response.json()).then((comments) => {
     const commSection = document.getElementById('comment-list');
+    // Remove the comments that already existed.
+    commSection.innerHTML = "";
     // Build the comment section.
     comments.forEach((comm) => {
       commSection.appendChild(createIndividualComment(comm));
@@ -73,7 +77,6 @@ function createIndividualComment(comment) {
   deleteButtonElement.setAttribute('class', 'delete-button');
   deleteButtonElement.src = 'images/trash.png';
   deleteButtonElement.addEventListener('click', () => {
-    console.log('here');
     deleteComment(comment);
     // Remove the comment from the DOM.
     liElement.remove();

@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.lang.Exception;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -33,12 +34,29 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 
+  Integer defaultCommentsNumber = 4;
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
+
+     /**
+    * Limit the number of comments to a value chosen by the user.
+    * Extract that value from a query string.
+    * If it does not exist, show 4 comments.
+    */
+
+    Integer commentsNumber;
+    Integer commentsCount = 0;
+
+    try {
+      commentsNumber = Integer.parseInt(request.getParameter("commentsnumber"));
+    } catch (Exception e) {
+      commentsNumber = defaultCommentsNumber;
+    }
 
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
@@ -48,6 +66,10 @@ public class DataServlet extends HttpServlet {
 
       Comment comment = new Comment(id, username, text);
       comments.add(comment);
+      commentsCount++;
+      if (commentsCount == commentsNumber) {
+        break;
+      }
     }
     Gson gson = new Gson();
     String json = gson.toJson(comments);
