@@ -73,11 +73,7 @@ function createIndividualComment(comment) {
   deleteButtonElement.setAttribute('class', 'delete-button');
   deleteButtonElement.src = 'images/trash.png';
   deleteButtonElement.addEventListener('click', () => {
-    let boolSucces = deleteComment(comment);
-    if (boolSucces) {
-      // Remove the comment from the DOM.
-      liElement.remove();
-    }
+    deleteComment(comment, liElement);
   });
 
   usernameElement.innerText = comment.username + ' wrote:';
@@ -88,17 +84,14 @@ function createIndividualComment(comment) {
   return liElement;
 }
 
-function deleteComment(comment) {
+function deleteComment(comment, element) {
   let resultStatus;
   const params = new URLSearchParams();
   params.append('id', comment.id);
   fetch('/delete-comment', {method: 'POST', body: params}).then(result => {
     //Check if the comment was deleted succesfully.
     if (result.status === 200) {
-      resultStatus = true;
-    } else {
-      resultStatus = false;
+      element.remove();
     }
   });
-  return resultStatus;
 }
