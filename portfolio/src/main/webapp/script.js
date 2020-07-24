@@ -71,7 +71,13 @@ function createIndividualComment(comment) {
   // Made an image represent the delete button.
   const deleteButtonElement = document.createElement('img');
   deleteButtonElement.setAttribute('class', 'delete-button');
-  deleteButtonElement.src = 'images/trash.png'; 
+  deleteButtonElement.src = 'images/trash.png';
+  deleteButtonElement.addEventListener('click', () => {
+    console.log('here');
+    deleteComment(comment);
+    // Remove the comment from the DOM.
+    liElement.remove();
+  });
 
   usernameElement.innerText = comment.username + ' wrote:';
   commentElement.innerText = comment.text;
@@ -79,4 +85,10 @@ function createIndividualComment(comment) {
   liElement.appendChild(usernameElement);
   liElement.appendChild(commentElement);
   return liElement;
+}
+
+function deleteComment(comment) {
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  fetch('/delete-comment', {method: 'POST', body: params});
 }

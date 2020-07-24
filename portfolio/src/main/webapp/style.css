@@ -97,7 +97,8 @@ li > div {
   margin-top: 10px;
   width: 26px;
   grid-area: right;
-  align-content: center
+  align-content: center;
+  cursor: pointer;
 }
 
 .username-container {
