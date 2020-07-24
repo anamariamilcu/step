@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/** This class is responsible for loading comments and posting new ones. */
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 

@@ -5,7 +5,7 @@ package com.google.sps.data;
 public class Comment {
   private final long id;
   private final String username;
-  private String text;
+  private final String text;
 
   public Comment(long id, String username, String text) {
     this.id = id;
