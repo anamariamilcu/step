@@ -1,32 +1,51 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Ana-Maria's Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <div id="content">
-      <h1>Hi! I am Ana-Maria and this is my about me page</h1>
-      <p>I am an intern for Google's STEP program this year and I'm excited
-          to learn new things. I am 21 years old and I study Computer Science
-          in Bucharest, Romania.</p>
 
-      <p>Here you can see me:</p>
-      <img src="images/me.jpeg" width="600">
+<head>
+	<meta charset="UTF-8">
+	<title>Ana-Maria's Portfolio</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js"></script>
+</head>
 
-      <p>Here are some cute cats that me and my friends met in our last trip:</p>
-      <img src="images/cats.jpg" width="600">
+<body onload="getCommentSectionFromServer()">
+	<div id="comments-container">
+		<h3> Leave a comment if you enjoyed my page🐈</h3>
 
-      <p>More about me:</p>
-      <p><a href="gallery.html">Check out my gallery!!!</a></p>
+		<form action="/comment-section" method="POST">
+			<label for="username">Type your username:</label><br>
+			<input type="text" id="username" name="username"><br>
+			<label for="comment">Type the comment:</label><br>
+			<textarea id="comment" name="comment" rows="4" cols="40"></textarea><br>
+			<input type="submit" value="Post comment!">
+    </form>
 
-      <p><a href="https://github.com/anamariamilcu">Visit my github profile!</a></p>
+    <ul id="comment-list"></ul> 
+	</div>
 
-      <p><a href="random_fact.html">Find a random fact about me</a></p>
+  <div id="left-container">
+		<p>More about me:</p>
+		<p><a href="gallery.html">Check out my gallery!!!</a></p>
 
-      <p><a href="friends.html">Meet some of my friends</a></p>
+		<p><a href="https://github.com/anamariamilcu">Visit my github profile!</a></p>
 
-    </div>
-  </body>
+		<p><a href="random_fact.html">Find a random fact about me</a></p>
+
+		<p><a href="friends.html">Meet some of my friends</a></p>
+	</div>
+
+	<div id="content">
+		<h1>Hi! I am Ana-Maria and this is my about me page</h1>
+		<p>I am an intern for Google's STEP program this year and I'm excited
+			to learn new things. I am 21 years old and I study Computer Science
+			in Bucharest, Romania.</p>
+
+		<p>Here you can see me:</p>
+		<img src="images/me.jpeg" width="600">
+
+		<p>Here are some cute cats that me and my friends met in our last trip:</p>
+		<img src="images/cats.jpg" width="600">
+	</div>
+
+</body>
 </html>
