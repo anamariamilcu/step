@@ -85,12 +85,11 @@ function createIndividualComment(comment) {
 }
 
 function deleteComment(comment, element) {
-  let resultStatus;
-  const params = new URLSearchParams();
-  params.append('id', comment.id);
-  fetch('/delete-comment', {method: 'POST', body: params}).then(result => {
+  let url = '/delete-comment?id=' + comment.id;
+  fetch(url, {method: 'DELETE'}).then(result => {
     //Check if the comment was deleted succesfully.
     if (result.status === 200) {
+      // Remove the comment container only if the request was succesfull.
       element.remove();
     }
   });
