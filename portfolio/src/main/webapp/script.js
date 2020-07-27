@@ -52,8 +52,7 @@ function addPhoto() {
 function getCommentSectionFromServer() {
   let commentsNumber = document.getElementById('comment-number').value;
   let commentsOrder = document.getElementById('comment-order').value;
-  let url = '/comment-section?commentsnumber=' + commentsNumber +
-    '&commentsorder=' + commentsOrder;
+  let url = `/comment-section?commentsnumber=${commentsNumber}&commentsorder=${commentsOrder}`;
   fetch(url).then(response => response.json()).then((comments) => {
     const commSection = document.getElementById('comment-list');
     // Remove the comments that already existed.
@@ -84,7 +83,7 @@ function createIndividualComment(comment) {
     liElement.remove();
   });
 
-  usernameElement.innerText = comment.username + ' wrote on ' + comment.date;
+  usernameElement.innerText = `${comment.username} wrote on ${comment.date}`;
   commentElement.innerText = comment.text;
   liElement.appendChild(deleteButtonElement);
   liElement.appendChild(usernameElement);

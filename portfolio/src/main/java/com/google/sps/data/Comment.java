@@ -5,6 +5,7 @@ import java.util.Date;
 /* Class that represents a comment object */
 
 public class Comment {
+  //TODO use AutoValue
   private final long id;
   private final String username;
   private final String text;

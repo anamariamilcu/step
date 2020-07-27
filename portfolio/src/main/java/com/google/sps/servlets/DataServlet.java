@@ -42,21 +42,22 @@ public class DataServlet extends HttpServlet {
 
   Integer defaultCommentsNumber = 4;
   SimpleDateFormat DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
-  TimeZone timeZone = TimeZone.getTimeZone("Europe/Bucharest");
+  // TODO support local timezones. For now let it general.
+  TimeZone timeZone = TimeZone.getTimeZone("UTC");
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
     String commentsOrder;
-    try {
-      commentsOrder = request.getParameter("commentsorder");
-      if (commentsOrder.equals("DESC")) {
-        query.addSort("timestamp", SortDirection.DESCENDING);
-      } else {
-        query.addSort("timestamp", SortDirection.ASCENDING);
-      }
-    } catch (Exception e) {
-      //No sorting.
+    commentsOrder = request.getParameter("commentsorder");
+    // If there is no commentsorder query, make it descending order.
+    if (commentsOrder.equals("DESC") || commentsOrder == null) {
+      query.addSort("timestamp", SortDirection.DESCENDING);
+    } else if (commentsOrder.equals("ASC")) {
+      query.addSort("timestamp", SortDirection.ASCENDING);
+    } else {
+      // If the data provided by the user is invalid send a 400 Bad Request.
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid input.");
     }
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -68,16 +69,21 @@ public class DataServlet extends HttpServlet {
     * If it does not exist, show 4 comments.
     */
 
-    Integer commentsNumber;
+    Integer commentsNumber = defaultCommentsNumber;
     Integer commentsCount = 0;
 
     try {
       commentsNumber = Integer.parseInt(request.getParameter("commentsnumber"));
-      if (commentsNumber == 1) {
-          commentsNumber = results.countEntities();
-      }
+    } catch (NumberFormatException e) {
+      // If the data provided by the user is invalid send a 400 Bad Request.
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     } catch (Exception e) {
-      commentsNumber = defaultCommentsNumber;
+      // For other errors, send a 500 Internal Server Error.
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+    /* In the html page, 1 is used as a value that represents show all comments. */
+    if (commentsNumber == 1) {
+      commentsNumber = results.countEntities();
     }
 
     List<Comment> comments = new ArrayList<>();
