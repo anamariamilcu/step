@@ -30,15 +30,34 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.text.ParseException;
+import java.util.TimeZone;
+import java.util.Calendar;
+import java.text.DateFormat;
 
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 
   Integer defaultCommentsNumber = 4;
-
+  SimpleDateFormat DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
+  TimeZone timeZone = TimeZone.getTimeZone("Europe/Bucharest");
+    
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
+    String commentsOrder;
+    try {
+      commentsOrder = request.getParameter("commentsorder");
+      if (commentsOrder.equals("DESC")) {
+        query.addSort("timestamp", SortDirection.DESCENDING);
+      } else {
+        query.addSort("timestamp", SortDirection.ASCENDING);
+      }
+    } catch (Exception e) {
+      //No sorting.
+    }
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
@@ -54,6 +73,9 @@ public class DataServlet extends HttpServlet {
 
     try {
       commentsNumber = Integer.parseInt(request.getParameter("commentsnumber"));
+      if (commentsNumber == 1) {
+          commentsNumber = results.countEntities();
+      }
     } catch (Exception e) {
       commentsNumber = defaultCommentsNumber;
     }
@@ -63,8 +85,10 @@ public class DataServlet extends HttpServlet {
       long id = entity.getKey().getId();
       String username = (String) entity.getProperty("username");
       String text = (String) entity.getProperty("text");
-
-      Comment comment = new Comment(id, username, text);
+      String date = (String) entity.getProperty("date");
+      long timestamp = (long) entity.getProperty("timestamp");
+      Comment comment;
+      comment = new Comment(id, username, text, date, timestamp);
       comments.add(comment);
       commentsCount++;
       if (commentsCount == commentsNumber) {
@@ -85,7 +109,8 @@ public class DataServlet extends HttpServlet {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("username", newComment.getUsername());
     commentEntity.setProperty("text", newComment.getText());
-
+    commentEntity.setProperty("date", newComment.getDate());
+    commentEntity.setProperty("timestamp", newComment.getTimestamp());
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
     response.sendRedirect("index.html");
@@ -95,7 +120,8 @@ public class DataServlet extends HttpServlet {
     // Get the input from the form and make it a Comment object.
     String usernameString = request.getParameter("username");
     String commentString = request.getParameter("comment");
-
-    return new Comment(0, usernameString, commentString);
+    DateFor.setTimeZone(timeZone);
+    return new Comment(0, usernameString, commentString, 
+      DateFor.format(new Date()), System.currentTimeMillis());
   }
 }

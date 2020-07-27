@@ -21,12 +21,17 @@
     </form>
     <label for="comment-number">Choose the no. of comments to display:</label>
     <select id="comment-number" name="comment-number" onchange="getCommentSectionFromServer()">
-      <option value="1">1</option>
+      <option value="1">All</option>
       <option value="2">2</option> 
       <option value="3">3</option> 
-      <option value="4">4</option> 
+      <option value="4" selected>4</option> 
       <option value="5">5</option> 
-      <option value="6">6</option> 
+      <option value="6">6</option>
+    </select>
+    <label for="comment-order">See comments:</label>
+    <select id="comment-order" name="comment-order" onchange="getCommentSectionFromServer()"> 
+      <option value="DESC" selected>Most recent</option> 
+      <option value="ASC">Oldest</option> 
     </select>
     <ul id="comment-list"></ul>
 	</div>
