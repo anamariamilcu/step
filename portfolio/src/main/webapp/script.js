@@ -84,6 +84,8 @@ function createIndividualComment(comment) {
   return liElement;
 }
 
+/* Deletes the comment entity from the datastore with DELETE request
+and removes the container element if it was deleted successfully. */
 function deleteComment(comment, element) {
   let url = '/delete-comment?id=' + comment.id;
   fetch(url, {method: 'DELETE'}).then(result => {
@@ -92,5 +94,6 @@ function deleteComment(comment, element) {
       // Remove the comment container only if the request was succesfull.
       element.remove();
     }
+    //TODO handle the possible error.
   });
 }
