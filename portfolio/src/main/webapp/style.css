@@ -75,8 +75,8 @@ li {
   border-color: pink;
   display: grid;
   grid-template-areas: 
-    'header header header header header right'
-    'footer footer footer footer footer footer';
+    'header header header header header header header right'
+    'footer footer footer footer footer footer footer footer';
   grid-auto-columns: 1fr;     
 }
 

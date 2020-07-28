@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.lang.Exception;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -29,26 +30,74 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.text.ParseException;
+import java.util.TimeZone;
+import java.util.Calendar;
+import java.text.DateFormat;
 
 /** This class is responsible for loading comments and posting new ones. */
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 
+  Integer defaultCommentsNumber = 4;
+  SimpleDateFormat DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
+  // TODO support local timezones. For now let it general.
+  TimeZone timeZone = TimeZone.getTimeZone("UTC");
+    
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
+    String commentsOrder;
+    commentsOrder = request.getParameter("comments_order");
+    // If there is no commentsorder query, make it descending order.
+    if (commentsOrder.equals("DESC") || commentsOrder == null) {
+      query.addSort("timestamp", SortDirection.DESCENDING);
+    } else if (commentsOrder.equals("ASC")) {
+      query.addSort("timestamp", SortDirection.ASCENDING);
+    } else {
+      // If the data provided by the user is invalid send a 400 Bad Request.
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid input.");
+    }
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
+
+     /**
+    * Limit the number of comments to a value chosen by the user.
+    * Extract that value from a query string.
+    * If it does not exist, show 4 comments.
+    */
+
+    Integer commentsNumber = defaultCommentsNumber;
+    Integer commentsCount = 0;
+
+    try {
+      commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
+    } catch (NumberFormatException e) {
+      // If the data provided by the user is invalid send a 400 Bad Request.
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    }
+    /* In the html page, -1 is used as a value that represents show all comments. */
+    if (commentsNumber == -1) {
+      commentsNumber = results.countEntities();
+    }
 
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
       long id = entity.getKey().getId();
       String username = (String) entity.getProperty("username");
       String text = (String) entity.getProperty("text");
-
-      Comment comment = new Comment(id, username, text);
+      String date = (String) entity.getProperty("date");
+      long timestamp = (long) entity.getProperty("timestamp");
+      Comment comment;
+      comment = new Comment(id, username, text, date, timestamp);
       comments.add(comment);
+      commentsCount++;
+      if (commentsCount == commentsNumber) {
+        break;
+      }
     }
     Gson gson = new Gson();
     String json = gson.toJson(comments);
@@ -64,7 +113,8 @@ public class DataServlet extends HttpServlet {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("username", newComment.getUsername());
     commentEntity.setProperty("text", newComment.getText());
-
+    commentEntity.setProperty("date", newComment.getDate());
+    commentEntity.setProperty("timestamp", newComment.getTimestamp());
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
     response.sendRedirect("index.html");
@@ -74,7 +124,8 @@ public class DataServlet extends HttpServlet {
     // Get the input from the form and make it a Comment object.
     String usernameString = request.getParameter("username");
     String commentString = request.getParameter("comment");
-
-    return new Comment(0, usernameString, commentString);
+    DateFor.setTimeZone(timeZone);
+    return new Comment(0, usernameString, commentString, 
+      DateFor.format(new Date()), System.currentTimeMillis());
   }
 }
