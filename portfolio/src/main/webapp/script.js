@@ -52,7 +52,7 @@ function addPhoto() {
 function getCommentSectionFromServer() {
   let commentsNumber = document.getElementById('comment-number').value;
   let commentsOrder = document.getElementById('comment-order').value;
-  let url = `/comment-section?commentsnumber=${commentsNumber}&commentsorder=${commentsOrder}`;
+  let url = `/comment-section?comments_number=${commentsNumber}&comments_order=${commentsOrder}`;
   fetch(url).then(response => response.json()).then((comments) => {
     const commSection = document.getElementById('comment-list');
     // Remove the comments that already existed.

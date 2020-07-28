@@ -49,7 +49,7 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
     String commentsOrder;
-    commentsOrder = request.getParameter("commentsorder");
+    commentsOrder = request.getParameter("comments_order");
     // If there is no commentsorder query, make it descending order.
     if (commentsOrder.equals("DESC") || commentsOrder == null) {
       query.addSort("timestamp", SortDirection.DESCENDING);
@@ -73,16 +73,13 @@ public class DataServlet extends HttpServlet {
     Integer commentsCount = 0;
 
     try {
-      commentsNumber = Integer.parseInt(request.getParameter("commentsnumber"));
+      commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
     } catch (NumberFormatException e) {
       // If the data provided by the user is invalid send a 400 Bad Request.
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-    } catch (Exception e) {
-      // For other errors, send a 500 Internal Server Error.
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     }
-    /* In the html page, 1 is used as a value that represents show all comments. */
-    if (commentsNumber == 1) {
+    /* In the html page, -1 is used as a value that represents show all comments. */
+    if (commentsNumber == -1) {
       commentsNumber = results.countEntities();
     }
 
