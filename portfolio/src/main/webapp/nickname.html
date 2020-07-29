@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Set a nickname</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="authenticationScript.js"></script>
+  </head>
+  <body onload="showCurrentNickname()">
+    <div id="content">
+      <h1>Set Nickname</h1>
+      <p>Set your nickname here:</p>
+      <form method="POST" action="/nickname">
+        <input type="text" id="nickname" name="nickname"><br>
+        <input type="submit" value="Set nickname!">
+      </form>
+    </div>
+  </body>
+</html>

@@ -44,6 +44,7 @@ public class LoginServlet extends HttpServlet {
     response.setContentType("application/json");
     LoginData loginData;
     UserService userService = UserServiceFactory.getUserService();
+    
     if (userService.isUserLoggedIn()) {
       String userEmail = userService.getCurrentUser().getEmail();
       String urlToRedirectToAfterUserLogsOut = "/index.html";
@@ -55,6 +56,7 @@ public class LoginServlet extends HttpServlet {
       /* No email is neccesary. */
       loginData = new LoginData(false, "", loginUrl);
     }
+
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(loginData));
   }

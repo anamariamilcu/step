@@ -26,6 +26,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,14 +43,15 @@ import java.text.DateFormat;
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 
-  Integer defaultCommentsNumber = 4;
-  SimpleDateFormat DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
+  Integer final defaultCommentsNumber = 4;
+  SimpleDateFormat final DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
   // TODO support local timezones. For now let it general.
-  TimeZone timeZone = TimeZone.getTimeZone("UTC");
+  TimeZone final timeZone = TimeZone.getTimeZone("UTC");
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
+
     String commentsOrder;
     commentsOrder = request.getParameter("comments_order");
     // If there is no commentsorder query, make it descending order.
@@ -64,7 +67,7 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-     /**
+    /**
     * Limit the number of comments to a value chosen by the user.
     * Extract that value from a query string.
     * If it does not exist, show 4 comments.
@@ -72,7 +75,6 @@ public class DataServlet extends HttpServlet {
 
     Integer commentsNumber = defaultCommentsNumber;
     Integer commentsCount = 0;
-
     try {
       commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
     } catch (NumberFormatException e) {
@@ -99,6 +101,7 @@ public class DataServlet extends HttpServlet {
         break;
       }
     }
+    
     Gson gson = new Gson();
     String json = gson.toJson(comments);
     response.setContentType("application/json;");
@@ -107,25 +110,30 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Get the converted input from form.
-    Comment newComment = getCommentFromForm(request);
-    // Add it to the comment history.
+    // Add new comment to the comment history.
     Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("username", newComment.getUsername());
-    commentEntity.setProperty("text", newComment.getText());
-    commentEntity.setProperty("date", newComment.getDate());
-    commentEntity.setProperty("timestamp", newComment.getTimestamp());
+    UserService userService = UserServiceFactory.getUserService();
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    /* The entity has a field called username. This field will keep the email
+    or the nickname. If the user doesn't have a problem with his email be
+    displayed near his comments and doesn't set any nickname, then username
+    = email. Otherwise, if he has a nickname, then username = nickname. */ 
+
+    // Use NicknameServlet class to get current nickname.
+    NicknameServlet nicknameServletObj = new NicknameServlet();
+    String nickname = nicknameServletObj.getUserNickname(userService.getCurrentUser().getUserId());
+    if (nickname == null || nickname.isEmpty()) {
+      // Uses email as username.
+      commentEntity.setProperty("username", userService.getCurrentUser().getEmail());
+    } else {
+      commentEntity.setProperty("username", nickname);
+    }
+
+    commentEntity.setProperty("text", request.getParameter("comment"));
+    commentEntity.setProperty("date", DateFor.format(new Date()));
+    commentEntity.setProperty("timestamp", System.currentTimeMillis());
     datastore.put(commentEntity);
     response.sendRedirect("index.html");
-  }
-
-  private Comment getCommentFromForm(HttpServletRequest request) {
-    // Get the input from the form and make it a Comment object.
-    String usernameString = request.getParameter("username");
-    String commentString = request.getParameter("comment");
-    DateFor.setTimeZone(timeZone);
-    return new Comment(0, usernameString, commentString, 
-      DateFor.format(new Date()), System.currentTimeMillis());
   }
 }

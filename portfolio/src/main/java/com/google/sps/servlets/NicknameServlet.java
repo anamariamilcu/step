@@ -28,36 +28,34 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+/**
+   * Class that manages setting and editing users' nicknames.
+   */
 @WebServlet("/nickname")
 public class NicknameServlet extends HttpServlet {
 
+  /* Get the current nickname, if it exists. Returns an empty string otherwise. 
+     This function is used to set the default value in the form for nickname
+     set up, this way is easier for the user to edit it.*/
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html");
-    PrintWriter out = response.getWriter();
-    out.println("<h1>Set Nickname</h1>");
 
     UserService userService = UserServiceFactory.getUserService();
-    if (userService.isUserLoggedIn()) {
-      String nickname = getUserNickname(userService.getCurrentUser().getUserId());
-      out.println("<p>Set your nickname here:</p>");
-      out.println("<form method=\"POST\" action=\"/nickname\">");
-      out.println("<input name=\"nickname\" value=\"" + nickname + "\" />");
-      out.println("<br/>");
-      out.println("<button>Submit</button>");
-      out.println("</form>");
-    } else {
-      String loginUrl = userService.createLoginURL("/nickname");
-      out.println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+    if (!userService.isUserLoggedIn()) {
+      response.sendRedirect("/index.html");
+      return;
     }
+    String nickname = getUserNickname(userService.getCurrentUser().getUserId());
+    response.getWriter().println(nickname);
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
+    
     if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/nickname");
+      response.sendRedirect("/index.html");
       return;
     }
 
@@ -71,13 +69,13 @@ public class NicknameServlet extends HttpServlet {
     // The put() function automatically inserts new data or updates existing data based on ID
     datastore.put(entity);
 
-    response.sendRedirect("/home");
+    response.sendRedirect("/index.html");
   }
 
   /**
    * Returns the nickname of the user with id, or empty String if the user has not set a nickname.
    */
-  private String getUserNickname(String id) {
+  public String getUserNickname(String id) {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Query query =
         new Query("UserInfo")

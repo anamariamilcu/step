@@ -7,6 +7,10 @@ import java.util.Date;
 public class Comment {
   //TODO use AutoValue
   private final long id;
+  /* The username field represents the email of the user or if he has
+  a nickname setted, the nickname. This way, if the user does not want the
+  email to be displayed on the page, the comment will be signed with the
+  nickname, so the user chooses how to identify on the page.*/
   private final String username;
   private final String text;
   private final String date;
