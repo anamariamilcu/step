@@ -10,7 +10,8 @@ h1, h3 {
   color:rgb(102, 0, 102);
 }
 
-p, label, .username-container {
+p, label, .username-container,
+#login-container > span {
   color: rgb(227, 76, 133);
   font-weight: bold;
   font-size: large;
@@ -65,7 +66,7 @@ ul {
   list-style-type: none;
   padding: 0;
   overflow: auto;
-  overflow-y:scroll;
+  max-height: 400px;
 }
 
 li {
@@ -103,4 +104,8 @@ li > div {
 
 .username-container {
   grid-area: header;
+}
+
+#login-container {
+  margin-bottom: 10px;
 }

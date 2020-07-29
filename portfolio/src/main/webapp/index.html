@@ -6,19 +6,21 @@
 	<title>Ana-Maria's Portfolio</title>
 	<link rel="stylesheet" href="style.css">
 	<script src="script.js"></script>
+  <script src="authenticationScript.js"></script>
 </head>
 
-<body onload="getCommentSectionFromServer()">
+<body onload="getCommentSectionFromServer();addLoginOrLogoutMessages()">
 	<div id="comments-container">
 		<h3> Leave a comment if you enjoyed my page🐈</h3>
-
-		<form action="/comment-section" method="POST">
-			<label for="username">Type your username:</label><br>
+    <div id="login-container"></div>
+		<form id="form-container" action="/comment-section" method="POST">
+			<label for="username">Type your nickname:</label><br>
 			<input type="text" id="username" name="username"><br>
 			<label for="comment">Type the comment:</label><br>
 			<textarea id="comment" name="comment" rows="4" cols="40"></textarea><br>
 			<input type="submit" value="Post comment!">
     </form>
+    <label>Comments left on the page:</label><br>
     <label for="comment-number">Choose the no. of comments to display:</label>
     <select id="comment-number" name="comment-number" onchange="getCommentSectionFromServer()">
       <option value="-1">All</option>

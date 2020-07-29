@@ -50,9 +50,9 @@ function addPhoto() {
 }
 
 function getCommentSectionFromServer() {
-  let commentsNumber = document.getElementById('comment-number').value;
-  let commentsOrder = document.getElementById('comment-order').value;
-  let url = `/comment-section?comments_number=${commentsNumber}&comments_order=${commentsOrder}`;
+  const commentsNumber = document.getElementById('comment-number').value;
+  const commentsOrder = document.getElementById('comment-order').value;
+  const url = `/comment-section?comments_number=${commentsNumber}&comments_order=${commentsOrder}`;
   fetch(url).then(response => response.json()).then((comments) => {
     const commSection = document.getElementById('comment-list');
     // Remove the comments that already existed.
@@ -92,7 +92,7 @@ function createIndividualComment(comment) {
 /* Deletes the comment entity from the datastore with DELETE request
 and removes the container element if it was deleted successfully. */
 function deleteComment(comment, element) {
-  let url = '/delete-comment?id=' + comment.id;
+  let url = `/delete-comment?id=${comment.id}`;
   fetch(url, {method: 'DELETE'}).then(result => {
     //Check if the comment was deleted succesfully.
     if (result.status === 200) {
