@@ -13,9 +13,11 @@
 	<div id="comments-container">
 		<h3> Leave a comment if you enjoyed my page🐈</h3>
     <div id="login-container"></div>
-		<form id="form-container" action="/comment-section" method="POST">
-			<label for="comment">Type your comment:</label><br>
-			<textarea id="comment" name="comment" rows="4" cols="40"></textarea><br>
+		<form id="form-container" method="POST" enctype="multipart/form-data">
+			<label for="comment">Type your comment:</label>
+			<textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+      <label for="image">Upload a picture:</label>
+      <input type="file" id="upload-image" name="image">
 			<input type="submit" value="Post comment!">
     </form>
     <label>Comments left on the page:</label><br>

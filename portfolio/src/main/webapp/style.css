@@ -109,3 +109,11 @@ li > div {
 #login-container {
   margin-bottom: 10px;
 }
+
+.comment-image {
+  height: 100px;
+}
+
+.comment-text > a {
+  margin-right: 10px;
+}

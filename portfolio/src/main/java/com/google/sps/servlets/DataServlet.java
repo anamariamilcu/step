@@ -18,8 +18,20 @@ import com.google.sps.data.Comment;
 import com.google.gson.Gson;
 import java.util.List;
 import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.io.IOException;
 import java.lang.Exception;
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -43,10 +55,10 @@ import java.text.DateFormat;
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 
-  Integer final defaultCommentsNumber = 4;
-  SimpleDateFormat final DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
+  final Integer defaultCommentsNumber = 4;
+  final SimpleDateFormat DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
   // TODO support local timezones. For now let it general.
-  TimeZone final timeZone = TimeZone.getTimeZone("UTC");
+  final TimeZone timeZone = TimeZone.getTimeZone("UTC");
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -55,7 +67,7 @@ public class DataServlet extends HttpServlet {
     String commentsOrder;
     commentsOrder = request.getParameter("comments_order");
     // If there is no commentsorder query, make it descending order.
-    if (commentsOrder.equals("DESC") || commentsOrder == null) {
+    if (commentsOrder == null || commentsOrder.equals("DESC")) {
       query.addSort("timestamp", SortDirection.DESCENDING);
     } else if (commentsOrder.equals("ASC")) {
       query.addSort("timestamp", SortDirection.ASCENDING);
@@ -75,11 +87,13 @@ public class DataServlet extends HttpServlet {
 
     Integer commentsNumber = defaultCommentsNumber;
     Integer commentsCount = 0;
-    try {
-      commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
-    } catch (NumberFormatException e) {
-      // If the data provided by the user is invalid send a 400 Bad Request.
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    if (request.getParameter("comments_number") != null) {
+      try {
+        commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
+      } catch (NumberFormatException e) {
+        // If the data provided by the user is invalid send a 400 Bad Request.
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+      }
     }
     /* In the html page, -1 is used as a value that represents show all comments. */
     if (commentsNumber == -1) {
@@ -93,8 +107,9 @@ public class DataServlet extends HttpServlet {
       String text = (String) entity.getProperty("text");
       String date = (String) entity.getProperty("date");
       long timestamp = (long) entity.getProperty("timestamp");
+      String imageURL = (String) entity.getProperty("imageURL");
       Comment comment;
-      comment = new Comment(id, username, text, date, timestamp);
+      comment = new Comment(id, username, text, date, timestamp, imageURL);
       comments.add(comment);
       commentsCount++;
       if (commentsCount == commentsNumber) {
@@ -133,7 +148,50 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("text", request.getParameter("comment"));
     commentEntity.setProperty("date", DateFor.format(new Date()));
     commentEntity.setProperty("timestamp", System.currentTimeMillis());
+    // Get the URL of the image that the user uploaded to Blobstore.
+    String imageUrl = getUploadedFileUrl(request, "image");
+    if (imageUrl != null) {
+      commentEntity.setProperty("imageURL", imageUrl);
+    }
     datastore.put(commentEntity);
-    response.sendRedirect("index.html");
+    response.sendRedirect("/index.html");
+  }
+
+  /** Returns a URL that points to the uploaded file, or null if the user didn't upload a file. */
+  private String getUploadedFileUrl(HttpServletRequest request, String formInputElementName) {
+    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+    Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+    List<BlobKey> blobKeys = blobs.get(formInputElementName);
+
+    // User submitted form without selecting a file, so we can't get a URL. (dev server)
+    if (blobKeys == null || blobKeys.isEmpty()) {
+      return null;
+    }
+
+    // Our form only contains a single file input, so get the first index.
+    BlobKey blobKey = blobKeys.get(0);
+
+    // User submitted form without selecting a file, so we can't get a URL. (live server)
+    BlobInfo blobInfo = new BlobInfoFactory().loadBlobInfo(blobKey);
+    if (blobInfo.getSize() == 0) {
+      blobstoreService.delete(blobKey);
+      return null;
+    }
+
+    // TODO We could check the validity of the file here, e.g. to make sure it's an image file
+    // https://stackoverflow.com/q/10779564/873165
+
+    // Use ImagesService to get a URL that points to the uploaded file.
+    ImagesService imagesService = ImagesServiceFactory.getImagesService();
+    ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+
+    // To support running in Google Cloud Shell with AppEngine's devserver, we must use the relative
+    // path to the image, rather than the path returned by imagesService which contains a host.
+    try {
+      URL url = new URL(imagesService.getServingUrl(options));
+      return url.getPath();
+    } catch (MalformedURLException e) {
+      return imagesService.getServingUrl(options);
+    }
   }
 }

@@ -6,17 +6,19 @@ function addLoginOrLogoutMessages() {
   const initialMessage = document.createElement('span');
   const linkMessage = document.createElement('span');
   const container = document.getElementById('login-container');
+  const form = document.getElementById('form-container');
+  form.style.display = 'none';
   fetch('/login').then(response => response.json()).then((loginData) => {
     if (loginData.logStatus) {
       initialMessage.innerText = `Welcome, ${loginData.userEmail}!`;
       anchor.innerText = `Log out.`
       anchor.href = `${loginData.loginUrl}`;
+      // Only show form when the blobstore url its's ready.
+      fetchBlobstoreUrlAndShowForm(form);
     } else {
       initialMessage.innerText = 'Please log in to leave a comment';
       anchor.innerText = `Log in.`
       anchor.href = `${loginData.loginUrl}`;
-      const form = document.getElementById('form-container');
-      form.style.display = 'none';
     }
     linkMessage.appendChild(anchor);
     container.appendChild(initialMessage);
@@ -50,4 +52,20 @@ function showCurrentNickname() {
   fetch('nickname').then(response => response.text()).then((nickname) => {
     document.getElementById('nickname').defaultValue = nickname;
   });
+}
+
+/**
+  * This function will display the form only after the blobstore url has been
+  * loaded from the server, until then, the user should not see it, since 
+  * trying to load an image will generate an error.
+  */
+function fetchBlobstoreUrlAndShowForm(formElement) {
+  fetch('/blobstore-upload-url')
+      .then((response) => {
+        return response.text();
+      })
+      .then((imageUploadUrl) => {
+        formElement.action = imageUploadUrl;
+        formElement.style.display = 'block';
+      });
 }

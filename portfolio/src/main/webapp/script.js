@@ -80,12 +80,24 @@ function createIndividualComment(comment) {
   deleteButtonElement.addEventListener('click', () => {
     deleteComment(comment, liElement);
   });
-
+  
   usernameElement.innerText = `${comment.username} wrote on ${comment.date}`;
   commentElement.innerText = comment.text;
+
   liElement.appendChild(deleteButtonElement);
   liElement.appendChild(usernameElement);
   liElement.appendChild(commentElement);
+
+  if (typeof comment.imageURL !== 'undefined') {
+    const imageElement = document.createElement('img');
+    imageElement.setAttribute('class', 'comment-image');
+    imageElement.src = comment.imageURL;
+    const imageAnchor = document.createElement('a');
+    imageAnchor.href = comment.imageURL;
+    imageAnchor.appendChild(imageElement);
+    liElement.appendChild(imageAnchor);
+  }
+  
   return liElement;
 }
 
