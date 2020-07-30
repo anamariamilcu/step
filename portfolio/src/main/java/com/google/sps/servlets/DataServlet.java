@@ -149,7 +149,7 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("date", DateFor.format(new Date()));
     commentEntity.setProperty("timestamp", System.currentTimeMillis());
     // Get the URL of the image that the user uploaded to Blobstore.
-    String imageUrl = getUploadedFileUrl(request, "image");
+    String imageUrl = getUploadedFileUrl(request, response, "image");
     if (imageUrl != null) {
       commentEntity.setProperty("imageURL", imageUrl);
     }
@@ -158,7 +158,7 @@ public class DataServlet extends HttpServlet {
   }
 
   /** Returns a URL that points to the uploaded file, or null if the user didn't upload a file. */
-  private String getUploadedFileUrl(HttpServletRequest request, String formInputElementName) {
+  private String getUploadedFileUrl(HttpServletRequest request, HttpServletResponse response, String formInputElementName) throws IOException {
     BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
     Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
     List<BlobKey> blobKeys = blobs.get(formInputElementName);
@@ -178,8 +178,12 @@ public class DataServlet extends HttpServlet {
       return null;
     }
 
-    // TODO We could check the validity of the file here, e.g. to make sure it's an image file
+    // Check the validity of the file here, to make sure it's an image file.
     // https://stackoverflow.com/q/10779564/873165
+    if (blobInfo.getContentType().contains("image") == false) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Only image allowed");
+      blobstoreService.delete(blobKey);
+    }
 
     // Use ImagesService to get a URL that points to the uploaded file.
     ImagesService imagesService = ImagesServiceFactory.getImagesService();

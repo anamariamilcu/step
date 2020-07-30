@@ -88,6 +88,7 @@ function createIndividualComment(comment) {
   liElement.appendChild(usernameElement);
   liElement.appendChild(commentElement);
 
+  /* If there was any image attachment. */
   if (typeof comment.imageURL !== 'undefined') {
     const imageElement = document.createElement('img');
     imageElement.setAttribute('class', 'comment-image');
