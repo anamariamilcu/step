@@ -87,6 +87,7 @@ public class DataServlet extends HttpServlet {
 
     Integer commentsNumber = defaultCommentsNumber;
     Integer commentsCount = 0;
+    /* Avoid null pointer exception. */
     if (request.getParameter("comments_number") != null) {
       try {
         commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
@@ -179,9 +180,8 @@ public class DataServlet extends HttpServlet {
     }
 
     // Check the validity of the file here, to make sure it's an image file.
-    // https://stackoverflow.com/q/10779564/873165
     if (blobInfo.getContentType().contains("image") == false) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Only image allowed");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Only images allowed!");
       blobstoreService.delete(blobKey);
     }
 

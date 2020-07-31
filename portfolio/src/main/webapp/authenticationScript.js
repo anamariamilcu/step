@@ -7,7 +7,6 @@ function addLoginOrLogoutMessages() {
   const linkMessage = document.createElement('span');
   const container = document.getElementById('login-container');
   const form = document.getElementById('form-container');
-  form.style.display = 'none';
   fetch('/login').then(response => response.json()).then((loginData) => {
     if (loginData.logStatus) {
       initialMessage.innerText = `Welcome, ${loginData.userEmail}!`;

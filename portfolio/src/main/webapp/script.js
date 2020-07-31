@@ -39,7 +39,7 @@ function addAndReplaceRandomFact() {
 
 function addPhoto() {
   const imgElement = document.createElement('img');
-  // Sets the url of the image I want to add to the page
+  // Sets the url of the image I want to add to the page.
   imgElement.src = 'images/friends.jpg';
   imgElement.width = '600';
 
@@ -90,16 +90,20 @@ function createIndividualComment(comment) {
 
   /* If there was any image attachment. */
   if (typeof comment.imageURL !== 'undefined') {
-    const imageElement = document.createElement('img');
-    imageElement.setAttribute('class', 'comment-image');
-    imageElement.src = comment.imageURL;
-    const imageAnchor = document.createElement('a');
-    imageAnchor.href = comment.imageURL;
-    imageAnchor.appendChild(imageElement);
-    liElement.appendChild(imageAnchor);
+    liElement.appendChild(addUploadedImageToComment(comment));
   }
   
   return liElement;
+}
+
+function addUploadedImageToComment(comment) {
+  const imageElement = document.createElement('img');
+  imageElement.setAttribute('class', 'comment-image');
+  imageElement.src = comment.imageURL;
+  const imageAnchor = document.createElement('a');
+  imageAnchor.href = comment.imageURL;
+  imageAnchor.appendChild(imageElement);
+  return imageAnchor;
 }
 
 /* Deletes the comment entity from the datastore with DELETE request

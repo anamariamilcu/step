@@ -117,3 +117,7 @@ li > div {
 .comment-text > a {
   margin-right: 10px;
 }
+
+#form-container {
+  display: none;
+}
