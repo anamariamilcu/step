@@ -7,22 +7,23 @@ function addLoginOrLogoutMessages() {
   const linkMessage = document.createElement('span');
   const container = document.getElementById('login-container');
   fetch('/login').then(response => response.json()).then((loginData) => {
-    if (loginData.logStatus) {
+    // TODO error handling
+    if (loginData.userEmail.length !== 0) {
       initialMessage.innerText = `Welcome, ${loginData.userEmail}!`;
       anchor.innerText = `Log out.`
-      anchor.href = `${loginData.loginUrl}`;
+      anchor.href = `${loginData.logInOutUrl}`;
     } else {
       initialMessage.innerText = 'Please log in to leave a comment';
       anchor.innerText = `Log in.`
-      anchor.href = `${loginData.loginUrl}`;
+      anchor.href = `${loginData.logInOutUrl}`;
       const form = document.getElementById('form-container');
       form.style.display = 'none';
     }
     linkMessage.appendChild(anchor);
     container.appendChild(initialMessage);
     container.appendChild(linkMessage);
-    if (loginData.logStatus) {
-      addNicknameLink(container);
+    if (loginData.userEmail.length !== 0) {
+      container.appendChild(createSetNicknameLink());
     }
   });
 }
@@ -31,15 +32,13 @@ function addLoginOrLogoutMessages() {
   * If the user is logged in, they can change or set up their nickname. 
   * So they can be redirected to the page for nickname set up.
   */
-function addNicknameLink(container) {
-  const br = document.createElement('br');
+function createSetNicknameLink() {
   const nicknameAnchor = document.createElement('a');
   const linkNickname = document.createElement('span');
   nicknameAnchor.innerText = 'Set nickname.'
   nicknameAnchor.href = 'nickname.html';
-  container.appendChild(br);
   linkNickname.appendChild(nicknameAnchor);
-  container.appendChild(linkNickname);
+  return linkNickname;
 }
 
 /**

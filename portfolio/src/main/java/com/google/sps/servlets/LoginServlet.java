@@ -25,17 +25,18 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-  /* This class is used as a helper to send data as JSON to the web page regarding
-     user login status. */
+  /* Class used to send data as JSON to the web page regarding user login status. */
   static class LoginData {
-    final private boolean logStatus;
+    /* Field that contains the user that is currently logged in. If it's empty,
+    no user is logged in. */
     final private String userEmail;
-    final private String loginUrl;
+    /* Field that represents the link where the user will be redirected. They
+      can either log in or either log out, depending on their status. */
+    final private String logInOutUrl;
 
-    public LoginData(boolean logStatus, String userEmail, String loginUrl) {
-      this.logStatus = logStatus;
+    public LoginData(String userEmail, String logInOutUrl) {
       this.userEmail = userEmail;
-      this.loginUrl = loginUrl;
+      this.logInOutUrl = logInOutUrl;
     }
   }
 
@@ -49,12 +50,13 @@ public class LoginServlet extends HttpServlet {
       String userEmail = userService.getCurrentUser().getEmail();
       String urlToRedirectToAfterUserLogsOut = "/index.html";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
-      loginData = new LoginData(true, userEmail, logoutUrl);
+      loginData = new LoginData(userEmail, logoutUrl);
     } else {
       String urlToRedirectToAfterUserLogsIn = "/index.html";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
-      /* No email is neccesary. */
-      loginData = new LoginData(false, "", loginUrl);
+      /* No email is neccesary. If that field is blank, that means the user
+         is not logged in.*/
+      loginData = new LoginData("", loginUrl);
     }
 
     Gson gson = new Gson();

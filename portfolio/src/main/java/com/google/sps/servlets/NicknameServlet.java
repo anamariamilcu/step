@@ -42,48 +42,62 @@ public class NicknameServlet extends HttpServlet {
     response.setContentType("text/html");
 
     UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/index.html");
-      return;
-    }
+
     String nickname = getUserNickname(userService.getCurrentUser().getUserId());
     response.getWriter().println(nickname);
   }
 
+  /**
+   * If the user is not logged in, the form is hidden, so no post request can be
+   * performed, no need for checking if the user is logged.
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
-    
-    if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/index.html");
-      return;
-    }
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     String nickname = request.getParameter("nickname");
     String id = userService.getCurrentUser().getUserId();
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    String oldUsername = getUserNickname(id);
+    /* Get all comments made with previous nickname. */
+    Query query =
+        new Query("Comment")
+            .setFilter(new Query.FilterPredicate("username", Query.FilterOperator.EQUAL, oldUsername));
+    PreparedQuery results = datastore.prepare(query);
+
     Entity entity = new Entity("UserInfo", id);
     entity.setProperty("id", id);
     entity.setProperty("nickname", nickname);
-    // The put() function automatically inserts new data or updates existing data based on ID
+    /* The put() function automatically inserts new data or updates existing
+      data based on ID. */
     datastore.put(entity);
+    /* For the comments that were made with the previous nickname(or mail if it
+       did not exist), change the username field, so it will show the updated
+       one. */
+    for (Entity commEntity : results.asIterable()) {
+      System.out.println(commEntity.getProperty("username"));
+      commEntity.setProperty("username", nickname);
+      System.out.println(nickname);
+      datastore.put(commEntity);
+    }
 
     response.sendRedirect("/index.html");
   }
 
   /**
-   * Returns the nickname of the user with id, or empty String if the user has not set a nickname.
+   * Returns the nickname of the user with id, or the user's email if the user has not set a nickname.
    */
   public String getUserNickname(String id) {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    UserService userService = UserServiceFactory.getUserService();
     Query query =
         new Query("UserInfo")
             .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
     PreparedQuery results = datastore.prepare(query);
     Entity entity = results.asSingleEntity();
     if (entity == null) {
-      return "";
+      return userService.getCurrentUser().getEmail();
     }
     String nickname = (String) entity.getProperty("nickname");
     return nickname;

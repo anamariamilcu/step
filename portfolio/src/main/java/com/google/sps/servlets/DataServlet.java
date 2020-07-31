@@ -43,10 +43,11 @@ import java.text.DateFormat;
 @WebServlet("/comment-section")
 public class DataServlet extends HttpServlet {
 
-  Integer final defaultCommentsNumber = 4;
-  SimpleDateFormat final DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
+  final Integer defaultCommentsNumber = 4;
+  final SimpleDateFormat DateFor = new SimpleDateFormat("dd/MM/yy kk:mm:ss");
   // TODO support local timezones. For now let it general.
-  TimeZone final timeZone = TimeZone.getTimeZone("UTC");
+  final TimeZone timeZone = TimeZone.getTimeZone("UTC");
+  final Date date = new Date();
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -55,7 +56,7 @@ public class DataServlet extends HttpServlet {
     String commentsOrder;
     commentsOrder = request.getParameter("comments_order");
     // If there is no commentsorder query, make it descending order.
-    if (commentsOrder.equals("DESC") || commentsOrder == null) {
+    if (commentsOrder == null || commentsOrder.equals("DESC")) {
       query.addSort("timestamp", SortDirection.DESCENDING);
     } else if (commentsOrder.equals("ASC")) {
       query.addSort("timestamp", SortDirection.ASCENDING);
@@ -123,16 +124,11 @@ public class DataServlet extends HttpServlet {
     // Use NicknameServlet class to get current nickname.
     NicknameServlet nicknameServletObj = new NicknameServlet();
     String nickname = nicknameServletObj.getUserNickname(userService.getCurrentUser().getUserId());
-    if (nickname == null || nickname.isEmpty()) {
-      // Uses email as username.
-      commentEntity.setProperty("username", userService.getCurrentUser().getEmail());
-    } else {
-      commentEntity.setProperty("username", nickname);
-    }
+    commentEntity.setProperty("username", nickname);
 
     commentEntity.setProperty("text", request.getParameter("comment"));
-    commentEntity.setProperty("date", DateFor.format(new Date()));
-    commentEntity.setProperty("timestamp", System.currentTimeMillis());
+    commentEntity.setProperty("date", DateFor.format(date));
+    commentEntity.setProperty("timestamp", date.getTime());
     datastore.put(commentEntity);
     response.sendRedirect("index.html");
   }

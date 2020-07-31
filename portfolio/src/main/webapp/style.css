@@ -109,3 +109,8 @@ li > div {
 #login-container {
   margin-bottom: 10px;
 }
+
+#login-container > span::after {
+  content: "\a";
+  white-space: pre;
+}
