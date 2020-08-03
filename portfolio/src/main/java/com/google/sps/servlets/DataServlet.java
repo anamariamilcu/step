@@ -41,6 +41,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import javax.servlet.annotation.WebServlet;
+import com.google.appengine.api.images.ImagesServiceFailureException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -180,7 +181,7 @@ public class DataServlet extends HttpServlet {
     }
 
     // Check the validity of the file here, to make sure it's an image file.
-    if (blobInfo.getContentType().contains("image") == false) {
+    if (blobInfo.getContentType()..startsWith("image/") == false) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Only images allowed!");
       blobstoreService.delete(blobKey);
     }
@@ -196,6 +197,8 @@ public class DataServlet extends HttpServlet {
       return url.getPath();
     } catch (MalformedURLException e) {
       return imagesService.getServingUrl(options);
+    } catch (ImagesServiceFailureException e) {
+      return blobKey.getKeyString();
     }
   }
 }
