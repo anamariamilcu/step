@@ -15,13 +15,15 @@ public class Comment {
   private final String text;
   private final String date;
   private final long timestamp;
+  private final String imageURL;
 
-  public Comment(long id, String username, String text, String date, long timestamp) {
+  public Comment(long id, String username, String text, String date, long timestamp, String imageURL) {
     this.id = id;
     this.username = username;
     this.text = text;
     this.date = date;
     this.timestamp = timestamp;
+    this.imageURL = imageURL;
   }
 
   public long getId() {
@@ -42,5 +44,9 @@ public class Comment {
 
   public long getTimestamp() {
     return timestamp;
+  }
+
+  public String getImageURL() {
+    return imageURL;
   }
 }

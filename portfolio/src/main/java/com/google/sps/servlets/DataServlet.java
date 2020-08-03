@@ -18,8 +18,20 @@ import com.google.sps.data.Comment;
 import com.google.gson.Gson;
 import java.util.List;
 import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.io.IOException;
 import java.lang.Exception;
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -29,6 +41,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import javax.servlet.annotation.WebServlet;
+import com.google.appengine.api.images.ImagesServiceFailureException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -76,11 +89,14 @@ public class DataServlet extends HttpServlet {
 
     Integer commentsNumber = defaultCommentsNumber;
     Integer commentsCount = 0;
-    try {
-      commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
-    } catch (NumberFormatException e) {
-      // If the data provided by the user is invalid send a 400 Bad Request.
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    /* Avoid null pointer exception. */
+    if (request.getParameter("comments_number") != null) {
+      try {
+        commentsNumber = Integer.parseInt(request.getParameter("comments_number"));
+      } catch (NumberFormatException e) {
+        // If the data provided by the user is invalid send a 400 Bad Request.
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+      }
     }
     /* In the html page, -1 is used as a value that represents show all comments. */
     if (commentsNumber == -1) {
@@ -94,8 +110,9 @@ public class DataServlet extends HttpServlet {
       String text = (String) entity.getProperty("text");
       String date = (String) entity.getProperty("date");
       long timestamp = (long) entity.getProperty("timestamp");
+      String imageURL = (String) entity.getProperty("imageURL");
       Comment comment;
-      comment = new Comment(id, username, text, date, timestamp);
+      comment = new Comment(id, username, text, date, timestamp, imageURL);
       comments.add(comment);
       commentsCount++;
       if (commentsCount == commentsNumber) {
@@ -129,7 +146,56 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("text", request.getParameter("comment"));
     commentEntity.setProperty("date", DateFor.format(date));
     commentEntity.setProperty("timestamp", date.getTime());
+
+    // Get the URL of the image that the user uploaded to Blobstore.
+    String imageUrl = getUploadedFileUrl(request, response, "image");
+    if (imageUrl != null) {
+      commentEntity.setProperty("imageURL", imageUrl);
+    }
     datastore.put(commentEntity);
-    response.sendRedirect("index.html");
+    response.sendRedirect("/index.html");
+  }
+
+  /** Returns a URL that points to the uploaded file, or null if the user didn't upload a file. */
+  private String getUploadedFileUrl(HttpServletRequest request, HttpServletResponse response, String formInputElementName) throws IOException {
+    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+    Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+    List<BlobKey> blobKeys = blobs.get(formInputElementName);
+
+    // User submitted form without selecting a file, so we can't get a URL. (dev server)
+    if (blobKeys == null || blobKeys.isEmpty()) {
+      return null;
+    }
+
+    // Our form only contains a single file input, so get the first index.
+    BlobKey blobKey = blobKeys.get(0);
+
+    // User submitted form without selecting a file, so we can't get a URL. (live server)
+    BlobInfo blobInfo = new BlobInfoFactory().loadBlobInfo(blobKey);
+    if (blobInfo.getSize() == 0) {
+      blobstoreService.delete(blobKey);
+      return null;
+    }
+
+    // Check the validity of the file here, to make sure it's an image file.
+    if (blobInfo.getContentType()..startsWith("image/") == false) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Only images allowed!");
+      blobstoreService.delete(blobKey);
+    }
+
+    // Use ImagesService to get a URL that points to the uploaded file.
+    ImagesService imagesService = ImagesServiceFactory.getImagesService();
+    ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+
+    // To support running in Google Cloud Shell with AppEngine's devserver, we must use the relative
+    // path to the image, rather than the path returned by imagesService which contains a host.
+    try {
+      URL url = new URL(imagesService.getServingUrl(options));
+      return url.getPath();
+    } catch (MalformedURLException e) {
+      return imagesService.getServingUrl(options);
+    } catch (ImagesServiceFailureException e) {
+      return blobKey.getKeyString();
+    }
   }
 }

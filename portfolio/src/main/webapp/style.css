@@ -110,7 +110,14 @@ li > div {
   margin-bottom: 10px;
 }
 
-#login-container > span::after {
-  content: "\a";
-  white-space: pre;
+.comment-image {
+  height: 100px;
+}
+
+.comment-text > a {
+  margin-right: 10px;
+}
+
+#form-container {
+  display: none;
 }
