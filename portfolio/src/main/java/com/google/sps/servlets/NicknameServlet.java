@@ -56,6 +56,11 @@ public class NicknameServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
+    if (!userService.isUserLoggedIn()) {
+      // If the the user is not logged in, send a 401 Unauthorized Error.
+      response.sendError(HttpServletResponse.UNAUTHORIZED, "You are not logged in.");
+    }
+
     String nickname = request.getParameter("nickname");
     String id = userService.getCurrentUser().getUserId();
 
