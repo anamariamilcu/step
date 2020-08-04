@@ -58,7 +58,7 @@ function getCommentSectionFromServer() {
     // Remove the comments that already existed.
     commSection.innerHTML = "";
     // Build the comment section.
-    comments.forEach((comm) => {
+    comments.forEach(comm => {
       commSection.appendChild(createIndividualComment(comm));
     });
   });
@@ -67,6 +67,7 @@ function getCommentSectionFromServer() {
 // Format each particular comment to show up on page.
 function createIndividualComment(comment) {
   const liElement = document.createElement('li');
+  liElement.setAttribute('class', 'comment-li');
   // This container is used for showing the username.
   const usernameElement = document.createElement('div');
   usernameElement.setAttribute('class', 'username-container');
@@ -89,8 +90,9 @@ function createIndividualComment(comment) {
   liElement.appendChild(commentElement);
 
   /* If there was any image attachment. */
-  if (typeof comment.imageURL !== 'undefined') {
+  if (typeof comment.blobKeyString !== 'undefined') {
     liElement.appendChild(addUploadedImageToComment(comment));
+    liElement.appendChild(addImageLabels(comment.imageLabels));
   }
   
   return liElement;
@@ -99,11 +101,23 @@ function createIndividualComment(comment) {
 function addUploadedImageToComment(comment) {
   const imageElement = document.createElement('img');
   imageElement.setAttribute('class', 'comment-image');
-  imageElement.src = comment.imageURL;
+  imageElement.src = `/serve?blob-key=${comment.blobKeyString}`;
   const imageAnchor = document.createElement('a');
-  imageAnchor.href = comment.imageURL;
+  imageAnchor.href = `/serve?blob-key=${comment.blobKeyString}`;
   imageAnchor.appendChild(imageElement);
   return imageAnchor;
+}
+
+function addImageLabels(labels) {
+  const ulElement = document.createElement('ul');
+  ulElement.setAttribute('class', 'comment-labels');
+  labels.forEach(label => {
+    const labelElement = document.createElement('li');
+    const labelText = document.createTextNode(label);
+    labelElement.appendChild(labelText);
+    ulElement.appendChild(labelElement);
+  });
+  return ulElement;
 }
 
 /* Deletes the comment entity from the datastore with DELETE request

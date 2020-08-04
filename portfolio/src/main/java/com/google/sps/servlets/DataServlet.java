@@ -15,7 +15,6 @@
 package com.google.sps.servlets;
 
 import com.google.sps.data.Comment;
-import com.google.sps.data.Label;
 import com.google.gson.Gson;
 import java.util.List;
 import java.util.ArrayList;
@@ -119,10 +118,10 @@ public class DataServlet extends HttpServlet {
       String text = (String) entity.getProperty("text");
       String date = (String) entity.getProperty("date");
       long timestamp = (long) entity.getProperty("timestamp");
-      String imageURL = (String) entity.getProperty("imageURL");
-      ArrayList<Label> imageLabels = (ArrayList<Label>) entity.getProperty("imageLabels");
+      String blobKeyString = (String) entity.getProperty("blobKeyString");
+      ArrayList<String> imageLabels = (ArrayList<String>) entity.getProperty("imageLabels");
       Comment comment;
-      comment = new Comment(id, username, text, date, timestamp, imageURL, imageLabels);
+      comment = new Comment(id, username, text, date, timestamp, blobKeyString, imageLabels);
       comments.add(comment);
       commentsCount++;
       if (commentsCount == commentsNumber) {
@@ -164,14 +163,14 @@ public class DataServlet extends HttpServlet {
     // Get the URL of the image that the user uploaded to Blobstore, if it exists.
     BlobKey blobKey = getBlobKey(request, response, "image");
     if (blobKey != null) {
-      String imageUrl = getUploadedFileUrl(blobKey);
-      commentEntity.setProperty("imageURL", imageUrl);
+      //String imageUrl = getUploadedFileUrl(blobKey);
+      commentEntity.setProperty("blobKeyString", blobKey.getKeyString());
       // Get the labels of the image that the user uploaded.
       byte[] blobBytes = getBlobBytes(blobKey);
       List<EntityAnnotation> imageLabels = getImageLabels(blobBytes);
-      ArrayList<Label> labels = new ArrayList<>();
+      ArrayList<String> labels = new ArrayList<>();
       for (EntityAnnotation label : imageLabels) {
-        labels.add(new Label(label.getDescription(), String.valueOf(label.getScore())));
+        labels.add(new String(label.getDescription() + ": " + String.valueOf(label.getScore())));
       }
       commentEntity.setProperty("imageLabels", labels);
     }
@@ -208,22 +207,6 @@ public class DataServlet extends HttpServlet {
     }
 
     return blobKey;
-  }
-
-  /** Returns a URL that points to the uploaded file. */
-  private String getUploadedFileUrl(BlobKey blobKey) throws ImagesServiceFailureException {
-    // Use ImagesService to get a URL that points to the uploaded file.
-    ImagesService imagesService = ImagesServiceFactory.getImagesService();
-    ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
-
-    // To support running in Google Cloud Shell with AppEngine's devserver, we must use the relative
-    // path to the image, rather than the path returned by imagesService which contains a host.
-    try {
-      URL url = new URL(imagesService.getServingUrl(options));
-      return url.getPath();
-    } catch (MalformedURLException e) {
-      return imagesService.getServingUrl(options);
-    }
   }
 
   /**

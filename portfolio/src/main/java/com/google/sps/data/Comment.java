@@ -16,16 +16,16 @@ public class Comment {
   private final String text;
   private final String date;
   private final long timestamp;
-  private final String imageURL;
-  private final ArrayList<Label> imageLabels;
+  private final String blobKeyString;
+  private final ArrayList<String> imageLabels;
 
-  public Comment(long id, String username, String text, String date, long timestamp, String imageURL, ArrayList<Label> imageLabels) {
+  public Comment(long id, String username, String text, String date, long timestamp, String blobKeyString, ArrayList<String> imageLabels) {
     this.id = id;
     this.username = username;
     this.text = text;
     this.date = date;
     this.timestamp = timestamp;
-    this.imageURL = imageURL;
+    this.blobKeyString = blobKeyString;
     this.imageLabels = imageLabels;
   }
 
@@ -49,11 +49,11 @@ public class Comment {
     return timestamp;
   }
 
-  public String getImageURL() {
-    return imageURL;
+  public String getBlobKeyString() {
+    return blobKeyString;
   }
 
-  public ArrayList<Label> getImageLabels() {
+  public ArrayList<String> getImageLabels() {
     return imageLabels;
   }
 }
