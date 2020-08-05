@@ -254,7 +254,7 @@ public class DataServlet extends HttpServlet {
     BatchAnnotateImagesResponse batchResponse = client.batchAnnotateImages(requests);
     client.close();
     List<AnnotateImageResponse> imageResponses = batchResponse.getResponsesList();
-    if (imageResponses == null) {
+    if (imageResponses.size() != 1) {
       response.sendError(500, "Expected a single image response from batchAnnotateImages, got 0.");
     }
     AnnotateImageResponse imageResponse = imageResponses.get(0);
