@@ -93,4 +93,11 @@ public final class Event {
     // interface documentation, equals will check for set-equality across all set implementations.
     return a.title.equals(b.title) && a.when.equals(b.when) && a.attendees.equals(b.attendees);
   }
+
+  /**
+   * Returns true if a given person attends to event.
+   */
+  public boolean attends(String person) {
+    return attendees.contains(person);
+  }
 }
