@@ -91,14 +91,16 @@ function createIndividualComment(comment) {
 
   /* If there was any image attachment. */
   if (typeof comment.blobKeyString !== 'undefined') {
-    liElement.appendChild(addUploadedImageToComment(comment));
-    liElement.appendChild(addImageLabels(comment.imageLabels));
+    liElement.appendChild(createUploadedImageToComment(comment));
+    liElement.appendChild(createImageLabels(comment.imageLabels));
   }
   
   return liElement;
 }
 
-function addUploadedImageToComment(comment) {
+/** Using the serving servlet, function creates the image of the comment
+    for the page, also with an anchor that opens the image full. */
+function createUploadedImageToComment(comment) {
   const imageElement = document.createElement('img');
   imageElement.setAttribute('class', 'comment-image');
   imageElement.src = `/serve?blob-key=${comment.blobKeyString}`;
@@ -108,7 +110,9 @@ function addUploadedImageToComment(comment) {
   return imageAnchor;
 }
 
-function addImageLabels(labels) {
+/** Given a list of labels, creates an uordered list which contains as
+    items each label. */
+function createImageLabels(labels) {
   const ulElement = document.createElement('ul');
   ulElement.setAttribute('class', 'comment-labels');
   labels.forEach(label => {

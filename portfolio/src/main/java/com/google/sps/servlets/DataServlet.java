@@ -163,7 +163,6 @@ public class DataServlet extends HttpServlet {
     // Get the URL of the image that the user uploaded to Blobstore, if it exists.
     BlobKey blobKey = getBlobKey(request, response, "image");
     if (blobKey != null) {
-      //String imageUrl = getUploadedFileUrl(blobKey);
       commentEntity.setProperty("blobKeyString", blobKey.getKeyString());
       // Get the labels of the image that the user uploaded.
       byte[] blobBytes = getBlobBytes(blobKey);
@@ -221,17 +220,17 @@ public class DataServlet extends HttpServlet {
     long currentByteIndex = 0;
     boolean continueReading = true;
     while (continueReading) {
-      // end index is inclusive, so we have to subtract 1 to get fetchSize bytes
+      // End index is inclusive, so we have to subtract 1 to get fetchSize bytes.
       byte[] b =
           blobstoreService.fetchData(blobKey, currentByteIndex, currentByteIndex + fetchSize - 1);
       outputBytes.write(b);
 
-      // if we read fewer bytes than we requested, then we reached the end
+      // If we read fewer bytes than we requested, then we reached the end.
       if (b.length < fetchSize) {
         continueReading = false;
       }
 
-      currentByteIndex += fetchSize;
+      currentByteIndex += b.length();
     }
 
     return outputBytes.toByteArray();
@@ -255,11 +254,13 @@ public class DataServlet extends HttpServlet {
     BatchAnnotateImagesResponse batchResponse = client.batchAnnotateImages(requests);
     client.close();
     List<AnnotateImageResponse> imageResponses = batchResponse.getResponsesList();
+    if (imageResponses == null) {
+      response.sendError(500, "Expected a single image response from batchAnnotateImages, got 0.");
+    }
     AnnotateImageResponse imageResponse = imageResponses.get(0);
 
     if (imageResponse.hasError()) {
-      System.err.println("Error getting image labels: " + imageResponse.getError().getMessage());
-      return null;
+      response.sendError(500, "Image Annotator Client failed.");
     }
 
     return imageResponse.getLabelAnnotationsList();
