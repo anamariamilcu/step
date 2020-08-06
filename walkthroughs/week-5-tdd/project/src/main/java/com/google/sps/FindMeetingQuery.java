@@ -20,6 +20,26 @@ import java.util.ArrayList;
 public final class FindMeetingQuery {
 
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+
+    ArrayList<String> mandatoryAttendees = new ArrayList<>(request.getAttendees());
+    ArrayList<String> attendeesIncludingOptional = 
+        new ArrayList<>(request.getOptionalAttendees());
+    attendeesIncludingOptional.addAll(mandatoryAttendees);
+    
+    /* Try to find some time ranges that fits everyone. */
+    Collection<TimeRange> timeRangesForEveryone = queryForListOfAttendees(events, 
+        attendeesIncludingOptional, (int) request.getDuration());
+    if (timeRangesForEveryone.size() > 0) {
+      return timeRangesForEveryone;
+    }
+    /* If there is no time slot in which everyone is available, take into account
+       only mandatory attendees.  */
+    return queryForListOfAttendees(events, mandatoryAttendees, (int) request.getDuration());
+
+  }
+
+  public Collection<TimeRange> queryForListOfAttendees(Collection<Event> events,
+      Collection<String> attendees, int duration) {
     
     /* Initializing an array that will provide information for each minute in a day. 
        dayMinutes[j] will represent what is happening in minute j, where j is
@@ -31,9 +51,9 @@ public final class FindMeetingQuery {
       dayMinutes.add(new MinuteDetails(true, i + 1));
     }
     /* Set in the array the minutes in which all mandatory attendees are not available. */
-    setMandatoryAttendeesAvailability(dayMinutes, events, request.getAttendees());
+    setMandatoryAttendeesAvailability(dayMinutes, events, attendees);
 
-    return findAavailableTimeRanges(dayMinutes, (int) request.getDuration());
+    return findAavailableTimeRanges(dayMinutes, duration);
   }
 
   /* Set in dayMinutes the minutes in which the meeting can't be held and the next availability
