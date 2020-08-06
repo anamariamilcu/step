@@ -25,7 +25,7 @@ public final class FindMeetingQuery {
        dayMinutes[j] will represent what is happening in minute j, where j is
        from 0 to 3599. */
     ArrayList<MinuteDetails> dayMinutes = new ArrayList<>();
-    for (int i = 0; i <= TimeRange.END_OF_DAY  + 1; i++) {
+    for (int i = 0; i < TimeRange.WHOLE_DAY.duration(); i++) {
       /* Initially, consider that each minute of the day is available for a metting. 
          If that is so, the next available minute would be the next one. */ 
       dayMinutes.add(new MinuteDetails(true, i + 1));
@@ -40,34 +40,36 @@ public final class FindMeetingQuery {
      field for every minute. */
   private void setMandatoryAttendeesAvailability(ArrayList<MinuteDetails> dayMinutes,
       Collection<Event> events, Collection<String> attendees) {
+        /* Complete setMandatoryAavailability field first. */
         for (Event event : events) {
           for (String person : attendees) {
-            if (event.attends(person)) {
-              /* Set all the minutes of the current event as unavailabe in dayMinutes. */
-              int start = event.getWhen().start();
-              int end = event.getWhen().end();
-              /* Update the next availability for the minute before the event. */
-              if (start > 0 && dayMinutes.get(start - 1).getNextAvailableMinute() < end) {
-                dayMinutes.get(start - 1).setNextAvailableMinute(end);
-              }
-              for (int i = start; i < end; i++) {
-                if (i <= TimeRange.END_OF_DAY) {
-                  dayMinutes.get(i).setMandatoryAvailability(false);
-                  /* Update the next availability for the current minute only if the setted
-                  availability does not point to an even later time. */
-                  if (dayMinutes.get(i).getNextAvailableMinute() < end) {
-                    dayMinutes.get(i).setNextAvailableMinute(end);    
-                  }
-                } else {
-                  break;
-                }
-              }
-              /* There is no point in continuing with checking if other persons are in the
-                current event, since those time slots are already set as unavailable. */ 
-              break;
+            if (!event.isAttendedBy(person)) {
+              continue;
             }
-          }
+            /* Set all the minutes of the current event as unavailabe in dayMinutes. */
+            int start = event.getWhen().start();
+            int end = event.getWhen().end();
+            for (int i = start; i < end; i++) {
+              if (i > TimeRange.END_OF_DAY) {
+                break;
+              }
+              dayMinutes.get(i).setMandatoryAvailability(false);
+            }
+            /* There is no point in continuing with checking if other persons are in the
+              current event, since those time slots are already set as unavailable. */ 
+            break;
         }
+      }
+
+      int lastAvailableMinute = TimeRange.WHOLE_DAY.duration();
+      /* Loop over dayMinutes to set the nextAcailableMinute field. */
+      for (int i = dayMinutes.size() - 1; i >= 0; i--) {
+        dayMinutes.get(i).setNextAvailableMinute(lastAvailableMinute);
+        /* Update each time the last minute that we found as available. */
+        if (dayMinutes.get(i).getMandatoryAvailability()) {
+          lastAvailableMinute = i;
+        }
+      }
   }
 
   /* Returns a list of time ranges which fulfill all the requierments given in the request. */
@@ -88,16 +90,16 @@ public final class FindMeetingQuery {
       }
       /* The last minute in the range must have this formula to have a range with a number
          of minutes equal to duratio, as the number of minutes between start and end is
-         currentEnd - currentStart + 1= duration, because we want to include the  ends too. */
+         currentEnd - currentStart + 1 = duration, because we want to include the  ends too. */
       int currentEnd = currentStart + duration - 1;
       /* This variabile keeps track if we have found other suitable ending since we started
          analyzing the current start, it it used when current end reaches a minute that is not
          available. */
       int prevEnd = -1;
       
-
-      while (currentStart < TimeRange.END_OF_DAY) {
-        if (currentEnd <= (TimeRange.END_OF_DAY + 1)) {
+      /* It is <= because a meeting could potentially start at 23:59 and last 1 minute. */
+      while (currentStart <= TimeRange.END_OF_DAY) {
+        if (currentEnd <= TimeRange.END_OF_DAY) {
           /* If current end is good, try to expand the range. */
           if (dayMinutes.get(currentEnd).getMandatoryAvailability()) {
             /* Set previous ending to the last ending that fits and increment current ending. */
@@ -116,17 +118,15 @@ public final class FindMeetingQuery {
             currentStart = dayMinutes.get(currentEnd).getNextAvailableMinute();
             currentEnd = currentStart + duration - 1;
           }
-        } else {
-          /* If the current ending exceeded the minutes of a day, but the previous ending
-             was good, create a time range with the prev end. */
-          if (currentEnd == (TimeRange.END_OF_DAY + 2) && prevEnd != -1) {
-            timeRanges.add(TimeRange.fromStartDuration(currentStart, currentEnd - currentStart - 1));
-          }
+        } else if (currentEnd == (TimeRange.END_OF_DAY + 1)) {
+          /* If we got into at ending of the day, this means that the start is set in a right
+             position, so a new time range should be added, and this means all possible
+             time ranges have been covered. */
+          timeRanges.add(TimeRange.fromStartDuration(currentStart, currentEnd - currentStart));
           break;
         }
       }
 
     return timeRanges;
   }
-
 }
