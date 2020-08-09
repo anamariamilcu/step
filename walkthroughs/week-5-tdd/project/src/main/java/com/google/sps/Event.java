@@ -97,7 +97,8 @@ public final class Event {
   /**
    * Returns true if a given person attends to event.
    */
-  public boolean attends(String person) {
+
+  public boolean isAttendedBy(String person) {
     return attendees.contains(person);
   }
 }

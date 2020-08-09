@@ -1,6 +1,7 @@
 package com.google.sps.data;
 
-import java.util.Date; 
+import java.util.Date;
+import java.util.ArrayList;
 
 /* Class that represents a comment object */
 
@@ -15,15 +16,17 @@ public class Comment {
   private final String text;
   private final String date;
   private final long timestamp;
-  private final String imageURL;
+  private final String blobKeyString;
+  private final ArrayList<String> imageLabels;
 
-  public Comment(long id, String username, String text, String date, long timestamp, String imageURL) {
+  public Comment(long id, String username, String text, String date, long timestamp, String blobKeyString, ArrayList<String> imageLabels) {
     this.id = id;
     this.username = username;
     this.text = text;
     this.date = date;
     this.timestamp = timestamp;
-    this.imageURL = imageURL;
+    this.blobKeyString = blobKeyString;
+    this.imageLabels = imageLabels;
   }
 
   public long getId() {
@@ -46,7 +49,11 @@ public class Comment {
     return timestamp;
   }
 
-  public String getImageURL() {
-    return imageURL;
+  public String getBlobKeyString() {
+    return blobKeyString;
+  }
+
+  public ArrayList<String> getImageLabels() {
+    return imageLabels;
   }
 }
