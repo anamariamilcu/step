@@ -149,4 +149,4 @@ public final class FindMeetingQuery {
 
     return timeRanges;
   }
-  
+}

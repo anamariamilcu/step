@@ -198,7 +198,7 @@ public class DataServlet extends HttpServlet {
     }
 
     // Check the validity of the file here, to make sure it's an image file.
-    if (blobInfo.getContentType()..startsWith("image/") == false) {
+    if (blobInfo.getContentType().startsWith("image/") == false) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Only images allowed!");
       blobstoreService.delete(blobKey);
       return null;
@@ -229,7 +229,7 @@ public class DataServlet extends HttpServlet {
         continueReading = false;
       }
 
-      currentByteIndex += b.length();
+      currentByteIndex += b.length;
     }
 
     return outputBytes.toByteArray();
@@ -254,12 +254,12 @@ public class DataServlet extends HttpServlet {
     client.close();
     List<AnnotateImageResponse> imageResponses = batchResponse.getResponsesList();
     if (imageResponses.size() != 1) {
-      response.sendError(500, "Expected a single image response from batchAnnotateImages, got 0.");
+      //response.sendError(500, "Expected a single image response from batchAnnotateImages, got 0.");
     }
     AnnotateImageResponse imageResponse = imageResponses.get(0);
 
     if (imageResponse.hasError()) {
-      response.sendError(500, "Image Annotator Client failed.");
+      //response.sendError(500, "Image Annotator Client failed.");
     }
 
     return imageResponse.getLabelAnnotationsList();
